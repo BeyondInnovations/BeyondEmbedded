@@ -13,7 +13,7 @@
       };
       rustToolchain = pkgs.rust-bin.stable.latest.default.override {
         targets = [ 
-          "thumbv7em-none-eabihf"
+          "thumbv8m.main-none-eabihf"
           "thumbv6m-none-eabi"
         ];
         extensions = [ 
@@ -27,18 +27,18 @@
         buildInputs = [
           rustToolchain
           pkgs.probe-rs-tools
+          pkgs.picotool
           pkgs.elf2uf2-rs
           pkgs.flip-link
           pkgs.pkg-config
           pkgs.openssl
-          pkgs.libudev                # For probe-rs USB detection
-          pkgs.libusb                 # For probe-rs
-          pkgs.defmt-tools            # For defmt logging
+          pkgs.udev                   # For libudev (probe-rs USB detection)
+          pkgs.libusb1                # For probe-rs
         ];
         shellHook = ''
           export RUST_LOG=debug
           # For Embassy and CYW43 development
-          export CARGO_TARGET_THUMBV7EM_NONE_EABIHF_RUNNER="probe-rs run --chip RP2350"
+          export CARGO_TARGET_THUMBV8M_MAIN_NONE_EABIHF_RUNNER="probe-rs run --chip RP2350"
         '';
       };
     };

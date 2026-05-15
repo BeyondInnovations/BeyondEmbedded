@@ -39,6 +39,7 @@
           export RUST_LOG=debug
           # For Embassy and CYW43 development
           export CARGO_TARGET_THUMBV8M_MAIN_NONE_EABIHF_RUNNER="probe-rs run --chip RP2350"
+          echo "Happy coding! Welcometo the RP2350 (PICO 2W) development environment!"
         '';
       };
     };

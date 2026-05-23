@@ -13,12 +13,14 @@
 #![no_std]
 #![no_main]
 
+use core::ptr;
 use defmt::*;
 use defmt_rtt as _;
 use embedded_hal::delay::DelayNs;
 use embedded_hal::digital::OutputPin;
-
-/// Panic handler that sends panic info over the debug probe
+#[cfg(target_arch = "riscv32")]
+use panic_halt as _;
+#[cfg(target_arch = "arm")]
 use panic_probe as _;
 
 // Alias for our HAL crate
@@ -52,6 +54,22 @@ pub static IMAGE_DEF: hal::block::ImageDef = hal::block::ImageDef::secure_exe();
 /// External high-speed crystal on the Raspberry Pi Pico 2 board is 12 MHz.
 /// Adjust if your board has a different frequency
 const XTAL_FREQ_HZ: u32 = 12_000_000u32;
+
+static DEBUG_MARKER: u32 = 0;
+
+#[inline(never)]
+fn debug_halt_once() {
+    unsafe {
+        core::arch::asm!("bkpt #0", options(nomem, nostack, preserves_flags));
+    }
+}
+
+#[inline(never)]
+fn debug_breakpoint_marker() {
+    unsafe {
+        ptr::read_volatile(&DEBUG_MARKER);
+    }
+}
 
 /// Entry point to our bare-metal application.
 ///
@@ -87,6 +105,12 @@ fn main() -> ! {
     #[cfg(rp2350)]
     let mut timer = hal::Timer::new_timer0(pac.TIMER0, &mut pac.RESETS, &clocks);
 
+    // debug halt once to allow attaching a debugger before the main loop starts
+    // Without this, breakpoints are not hit
+    #[cfg(debug_assertions)]
+    debug_halt_once();
+    // debug_breakpoint_marker();
+
     // The single-cycle I/O block controls our GPIO pins
     let sio = hal::Sio::new(pac.SIO);
 
@@ -98,15 +122,21 @@ fn main() -> ! {
         &mut pac.RESETS,
     );
 
-    // Configure GPIO25 as an output
-    let mut led_pin = pins.gpio25.into_push_pull_output();
+    // Configure GPIO15 as an output
+    let mut led_pin = pins.gpio15.into_push_pull_output();
+    let timeout = 2000;
+    info!(
+        "Starting blinky loop for gpio15 with {} ms timeout",
+        timeout
+    );
     loop {
         info!("on!");
         led_pin.set_high().unwrap();
-        timer.delay_ms(200);
+        timer.delay_ms(timeout);
+
         info!("off!");
         led_pin.set_low().unwrap();
-        timer.delay_ms(200);
+        timer.delay_ms(timeout);
     }
 }
 

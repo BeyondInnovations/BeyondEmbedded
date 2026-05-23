@@ -6,7 +6,7 @@
 //!
 //! Set up linker scripts
 
-use std::fs::{File, read_to_string};
+use std::fs::{ File, read_to_string };
 use std::io::Write;
 use std::path::PathBuf;
 
@@ -52,8 +52,8 @@ fn main() {
     }
 
     let re = Regex::new(r"target = .*").unwrap();
-    let config_toml = read_to_string(".cargo/config.toml").unwrap();
-    let result = re.replace(&config_toml, format!("target = \"{}\"", target));
+    let config_toml = include_str!(".cargo/config.toml");
+    let result = re.replace(config_toml, format!("target = \"{}\"", target));
     let mut f = File::create(".cargo/config.toml").unwrap();
     f.write_all(result.as_bytes()).unwrap();
 
@@ -63,7 +63,6 @@ fn main() {
     let mut f = File::create(out.join("rp2350_riscv.x")).unwrap();
     f.write_all(rp2350_riscv_x).unwrap();
     println!("cargo:rerun-if-changed=rp2350_riscv.x");
-    println!("cargo:rerun-if-changed=.cargo/config.toml");
 
     println!("cargo:rerun-if-changed=build.rs");
 }

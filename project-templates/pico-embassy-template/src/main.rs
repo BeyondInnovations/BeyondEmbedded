@@ -36,7 +36,7 @@ async fn main(_spawner: Spawner) {
     debug_halt_once();
 
     let mut led = Output::new(p.PIN_15, Level::Low);
-    let timeout = 5000;
+    let timeout = 2000;
 
     info!("Hello, Pico Embassy!");
     info!("Starting main loop with {} ms timeout", timeout);

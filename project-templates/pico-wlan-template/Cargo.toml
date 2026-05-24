@@ -7,21 +7,29 @@ edition = "2024"
 regex = "1.11.0"
 
 [dependencies]
-embassy-executor = { version = "0.9", features = [
-  "arch-cortex-m",
+embassy-executor = { version = "0.10.0", features = [
+  "platform-cortex-m",
   "executor-thread",
+  "executor-interrupt",
   "defmt",
 ] }
+
+
 panic-probe = { version = "1.0", features = ["print-defmt"] }
 
 cortex-m = { version = "0.7.6" }
 cortex-m-rt = "0.7.5"
 
+
 defmt = "1.0.1"
-defmt-rtt = "1.0"
+defmt-rtt = "1.0.0"
+fixed = "1.23.1"
+fixed-macro = "1.2"
+
 
 embassy-time = { version = "0.5.0" }
 embassy-usb = { version = "0.6.0", features = ["defmt"] }
+
 embassy-net = { version = "0.9.1", features = [
   "defmt",
   "icmp",
@@ -31,7 +39,11 @@ embassy-net = { version = "0.9.1", features = [
   "dhcpv4",
   "medium-ethernet",
   "dns",
+  "proto-ipv4",
+  "proto-ipv6",
+  "multicast",
 ] }
+
 embassy-net-wiznet = { version = "0.3.0", features = ["defmt"] }
 embassy-futures = { version = "0.1.2" }
 embassy-usb-logger = { version = "0.6.0" }

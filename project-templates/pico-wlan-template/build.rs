@@ -6,7 +6,7 @@
 //!
 //! Set up linker scripts
 
-use std::fs::{ File, read_to_string };
+use std::fs::{File, read_to_string};
 use std::io::Write;
 use std::path::PathBuf;
 
@@ -15,6 +15,14 @@ use regex::Regex;
 fn main() {
     println!("cargo::rustc-check-cfg=cfg(rp2040)");
     println!("cargo::rustc-check-cfg=cfg(rp2350)");
+
+    println!("cargo:rerun-if-changed=.env");
+    let env_contents = read_to_string(".env").unwrap_or_else(|e| {
+        eprintln!("Failed to read file: {}", e);
+        String::new()
+    });
+    set_env_from_file(&env_contents, "WIFI_SSID");
+    set_env_from_file(&env_contents, "WIFI_PASSWORD");
 
     // Put the linker script somewhere the linker can find it
     let out = PathBuf::from(std::env::var_os("OUT_DIR").unwrap());
@@ -65,4 +73,20 @@ fn main() {
     println!("cargo:rerun-if-changed=rp2350_riscv.x");
 
     println!("cargo:rerun-if-changed=build.rs");
+}
+
+fn set_env_from_file(contents: &str, key: &str) {
+    let Some(value) = contents.lines().find_map(|line| {
+        let line = line.trim();
+        if line.is_empty() || line.starts_with('#') {
+            return None;
+        }
+
+        let (line_key, value) = line.split_once('=')?;
+        (line_key.trim() == key).then(|| value.trim())
+    }) else {
+        return;
+    };
+
+    println!("cargo:rustc-env={key}={value}");
 }

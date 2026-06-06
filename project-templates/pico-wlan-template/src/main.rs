@@ -46,8 +46,9 @@ use embassy_rp::gpio::{Level, Output};
 use embassy_time::{Duration, Timer};
 use {defmt_rtt as _, panic_probe as _};
 
+mod config;
 mod network;
-use network::init_network;
+use network::*;
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) {
@@ -60,10 +61,15 @@ async fn main(spawner: Spawner) {
     info!("Hello, Pico WLAN!");
 
     // Network
-    let mut control = init_network(
+    let (net_device, mut control) = init_network(
         spawner, p.PIN_23, p.PIN_24, p.PIN_25, p.PIN_29, p.PIO0, p.DMA_CH0,
     )
     .await;
+
+    scan_networks(&mut control).await;
+
+    connect_network(spawner, &mut control, net_device).await;
+
     // end Network
 
     let mut led = Output::new(p.PIN_15, Level::Low);

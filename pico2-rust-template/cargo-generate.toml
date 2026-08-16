@@ -1,0 +1,3 @@
+[template]
+cargo_generate_version = ">=0.9.0"
+description = "Raspberry Pi Pico 2 (RP2350) Embassy application with defmt logging"

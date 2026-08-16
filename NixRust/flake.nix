@@ -1,5 +1,5 @@
 {
-  description = "Rust embedded dev environment";
+  description = "Rust embedded dev environment - Raspberry Pi Pico 2 W (RP2350)";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -15,10 +15,8 @@
 
         rustToolchain = pkgs.rust-bin.stable.latest.default.override {
           extensions = [ "rust-src" "llvm-tools-preview" ];
-          # add whatever MCU targets you need, e.g.:
           targets = [
-            "thumbv7em-none-eabihf"  # Cortex-M4F/M7F
-            "thumbv6m-none-eabi"     # Cortex-M0/M0+
+            "thumbv8m.main-none-eabihf"  # RP2350 Arm Cortex-M33
           ];
         };
       in
@@ -26,17 +24,18 @@
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
             rustToolchain
-            probe-rs        # flashing/debugging via CMSIS-DAP, ST-Link, J-Link, etc.
+            probe-rs-tools
             cargo-binutils
             cargo-generate
+            elf2uf2-rs      # convert ELF to UF2 for BOOTSEL drag-and-drop flashing
+            picotool
             gdb
-            openocd
             pkg-config
             libusb1
             udev
+            flip-link       # zero-cost stack overflow protection, common in RP2xxx projects
           ];
 
-          # Needed for probe-rs / libusb to see USB devices
           LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [ pkgs.libusb1 pkgs.udev ];
         };
       });

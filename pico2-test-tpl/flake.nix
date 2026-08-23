@@ -42,6 +42,7 @@
             echo "Starting Rust embedded dev environment for Raspberry Pi Pico 2 W (RP2350)!"
             echo "Cargo Version: $(cargo --version)"
             echo "Probe RS Version: $(probe-rs --version)"
+            echo "PicoTool Version: $(picotool version)"
           '';
 
         };

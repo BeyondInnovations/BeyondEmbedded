@@ -15,10 +15,25 @@ cargo generate --git https://github.com/ImplFerris/pico2-template.git
 - HAL: Choose between Embassy (async) or rp-hal
 - defmt logging: Optional debugging support
 
+
+## Development environment
+
+Install manually, or 
+
+### Use  nix
+
+```sh
+nix develop
+```
+
 # Generate, Build, Run / Debug
 
-cargo generate --path /home/stefan/Develop/BeyondEmbedded/pico2-template
+```sh
+cargo generate --git https://github.com/BeyondInnovations/pico2-template.git
 
 cargo build
 cargo embed
+
+# without debug probe
 cargo run --release
+```

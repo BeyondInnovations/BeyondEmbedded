@@ -19,9 +19,8 @@ use defmt::*;
 pub static IMAGE_DEF: ImageDef = hal::block::ImageDef::secure_exe();
 
 #[embassy_executor::main]
-#[embassy_executor::main]
 async fn main(_spawner: Spawner) {
-    let p = embassy_rp::init(Default::default());
+    let _p = embassy_rp::init(Default::default());
     info!("Starting check project!");
 
     let delay = Duration::from_millis(500);

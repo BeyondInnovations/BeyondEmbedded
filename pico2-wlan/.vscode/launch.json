@@ -14,7 +14,6 @@
         "flashingEnabled": true,
         "haltAfterReset": false
       },
-      
       "coreConfigs": [
         {
           "coreIndex": 0,

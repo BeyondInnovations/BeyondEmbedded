@@ -5,6 +5,18 @@ use std::io::Write;
 use std::path::PathBuf;
 
 fn main() {
+    // Tell Cargo to rerun this script if .env changes
+    println!("cargo:rerun-if-changed=.env");
+    
+    // Load variables from .env file
+    if let Ok(lines) = std::fs::read_to_string(".env") {
+        for line in lines.lines() {
+            if let Some((key, value)) = line.split_once('=') {
+                println!("cargo:rustc-env={}={}", key.trim(), value.trim());
+            }
+        }
+    }
+
     // Put the linker script somewhere the linker can find it
     let out = PathBuf::from(std::env::var_os("OUT_DIR").unwrap());
     println!("cargo:rustc-link-search={}", out.display());
